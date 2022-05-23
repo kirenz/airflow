@@ -94,7 +94,7 @@ with DAG(
     t3 = BashOperator(
         task_id='task_templated',
         depends_on_past=False,
-        bash_command=templated_command.sh,
+        bash_command='templated_command.sh',
     )
 
     #----------------
