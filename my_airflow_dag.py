@@ -1,13 +1,38 @@
-from datetime import datetime, timedelta
-from textwrap import dedent
+#---------------------------------------
+# SETUP
 
 # The DAG object; we'll need this to instantiate a DAG
 from airflow import DAG
 
 # Operators; we need this to operate!
 from airflow.operators.bash import BashOperator
+
+# Module for manipulating dates and times
+from datetime import datetime, timedelta
+
+    # To change timezones, use Pendulum https://pendulum.eustace.io/
+
+# Some convenience functions
+from textwrap import dedent
+
+#---------------------------------------
+
+# DOCUMENTATION
+
+# It is recommended to write the DAG documentation 
+# at the beginning of the DAG file (using markdown)
+
+dag.doc_md = """
+This is a documentation placed anywhere
+"""  
+
+#---------------------------------------
+
+# DEFAULT DAG ARGUMENTS
+
 with DAG(
-    'my_airflow_dag',
+    # the following string is the unique identifier for your DAG
+    'my_airflow_dag', 
     # These args will get passed on to each operator
     # You can override them on a per-task basis during operator initialization
     default_args={
@@ -20,7 +45,7 @@ with DAG(
         # 'queue': 'bash_queue',
         # 'pool': 'backfill',
         # 'priority_weight': 10,
-        # 'end_date': datetime(2016, 1, 1),
+        # 'end_date': datetime(2022, 6, 1),
         # 'wait_for_downstream': False,
         # 'sla': timedelta(hours=2),
         # 'execution_timeout': timedelta(seconds=300),
@@ -32,51 +57,62 @@ with DAG(
     },
     description='A simple tutorial DAG',
     schedule_interval=timedelta(days=1),
-    start_date=datetime(2021, 1, 1),
+    start_date=datetime(2022, 5, 1),
     catchup=False,
     tags=['example'],
+
 ) as dag:
 
+    #---------------------------------------
+
+    # DEFINE OPERATERS
     # t1, t2 and t3 are examples of tasks created by instantiating operators
+    # they all will use the default_args we defined above
+    
     t1 = BashOperator(
         task_id='task_print_date',
         bash_command='date',
     )
 
-    t2 = BashOperator(
-        task_id='task_sleep',
-        depends_on_past=False,
-        bash_command='sleep 5',
-        retries=3,
-    )
+    # We can add documentation for each single task. 
     t1.doc_md = dedent(
         """\
     #### Task Documentation
     You can document your task using the attributes `doc_md` (markdown),
     `doc` (plain text), `doc_rst`, `doc_json`, `doc_yaml` which gets
     rendered in the UI's Task Instance Details page.
+
     ![img](http://montcs.bloomu.edu/~bobmon/Semesters/2012-01/491/import%20soul.png)
 
     """
     )
 
-    dag.doc_md = __doc__  # providing that you have a docstring at the beginning of the DAG
-    dag.doc_md = """
-    This is a documentation placed anywhere
-    """  # otherwise, type it like this
-    templated_command = dedent(
-        """
-    {% for i in range(5) %}
-        echo "{{ ds }}"
-        echo "{{ macros.ds_add(ds, 7)}}"
-    {% endfor %}
-    """
+    #----------------
+
+    t2 = BashOperator(
+        task_id='task_sleep',
+        depends_on_past=False,
+        bash_command='sleep 5',
+         # override the retries parameter with 3
+        retries=3,
     )
+
+    #----------------
+    
+    # EXAMPLE OF TEMPLATING WITH JINJA 
 
     t3 = BashOperator(
         task_id='task_templated',
         depends_on_past=False,
-        bash_command=templated_command,
+        bash_command=templated_command.sh,
     )
+
+    #----------------
+
+    # SETTING UP DEPENDENCIES 
+    # We have tasks t1, t2 and t3 that do not depend on each other. 
+    # Here's an example of how you can define dependencies between them:
+
+    # We use the bit shift operator to chain operations:
 
     t1 >> [t2, t3]
