@@ -15,16 +15,6 @@ from datetime import datetime, timedelta
 # Some convenience functions
 from textwrap import dedent
 
-#---------------------------------------
-
-# DOCUMENTATION
-
-# It is recommended to write the DAG documentation 
-# at the beginning of the DAG file (using markdown)
-
-dag.doc_md = """
-This is a documentation placed anywhere
-"""  
 
 #---------------------------------------
 
