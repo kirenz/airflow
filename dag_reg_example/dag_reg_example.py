@@ -57,6 +57,7 @@ with DAG(
     # they all will use the default_args we defined above
     
     t1 = BashOperator(
+        depends_on_past=False,
         task_id='data_prep',
         bash_command='python /jankirenz/airflow/dags/dag_reg_example/data.py',
     )
