@@ -20,7 +20,7 @@ from textwrap import dedent
 
 with DAG(
     # the following string is the unique identifier for your DAG
-    'reg_dag_happy', 
+    'dag_reg_example', 
     # These args will get passed on to each operator
     # You can override them on a per-task basis during operator initialization
     default_args={
