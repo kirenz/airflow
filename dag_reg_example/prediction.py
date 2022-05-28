@@ -13,9 +13,11 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from joblib import load
 
+from my_path import home_path, airflow_path
+
 #------------------------------------------------------
 # Step 1) Import model 
-reg = load('my_linear_model.joblib')
+reg = load(home_path + airflow_path + 'my_linear_model.joblib')
 
 #------------------------------------------------------
 # Step 2) Make new data
@@ -36,6 +38,6 @@ my_prediction = reg.predict(X_new)
 df_prediction = pd.Dataframe({"pred": my_prediction})
 
 # Store predictions as csv
-df.prediction.to_csv("my_prediction.csv")
+df.prediction.to_csv(home_path + airflow_path + "my_prediction.csv")
 
 #------------------------------------------------------
